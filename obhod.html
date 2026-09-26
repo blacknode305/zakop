@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Обход склада</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: #f1f3f5;
+    color: #111827;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 8px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 4px 2px 10px;
+}
+
+h2 {
+    font-size: 16px;
+    margin: 0 0 10px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 9px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+}
+
+textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 9px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.35;
+    background: #fafafa;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+button {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-success {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.buttons {
+    display: flex;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.buttons button {
+    flex: 1;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 9px;
+}
+
+.info-box {
+    background: #f5f6f7;
+    border-radius: 7px;
+    padding: 7px 9px;
+    min-width: 0;
+}
+
+.info-label {
+    font-size: 10px;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.info-value {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-wrapper {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+th {
+    background: #e9edf2;
+    font-size: 11px;
+    color: #4b5563;
+    font-weight: 700;
+    text-align: left;
+}
+
+th,
+td {
+    padding: 7px 4px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+    width: 28px;
+    text-align: center;
+    color: #9ca3af;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    width: auto;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+    width: 45px;
+    text-align: center;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+    width: 75px;
+    text-align: center;
+}
+
+.product-name {
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.unit {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.stock-input {
+    width: 68px;
+    height: 38px;
+    padding: 4px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: white;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.stock-input:focus {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.message {
+    padding: 8px 10px;
+    border-radius: 7px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.message-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.message-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.history-empty {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.history-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 9px;
+    margin-bottom: 7px;
+    background: #fafafa;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-supplier {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.history-date {
+    color: #6b7280;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.history-count {
+    color: #6b7280;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.history-buttons {
+    display: flex;
+    gap: 6px;
+    margin-top: 7px;
+}
+
+.history-buttons button {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.database-buttons {
+    display: flex;
+    gap: 7px;
+}
+
+.database-buttons button {
+    flex: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.file-input {
+    display: none;
+}
+
+@media (max-width: 360px) {
+
+    .container {
+        padding: 5px;
+    }
+
+    .card {
+        padding: 7px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    .product-name {
+        font-size: 12px;
+    }
+
+    .stock-input {
+        width: 62px;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+        width: 40px;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+        width: 68px;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Обход склада</h1>
+
+
+    <!-- =========================================
+         ВСТАВКА СПИСКА
+    ========================================== -->
+
+    <div class="card" id="inputCard">
+
+        <h2>Вставьте список</h2>
+
+        <textarea
+            id="sourceText"
+            placeholder="Вставьте список товаров..."
+        ></textarea>
+
+        <div class="buttons">
+
+            <button
+                class="btn-primary"
+                onclick="parseList()"
+            >
+                Сформировать
+            </button>
+
+            <button
+                class="btn-secondary"
+                onclick="clearInput()"
+            >
+                Очистить
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ОБХОД
+    ========================================== -->
+
+    <div
+        class="card hidden"
+        id="inventoryCard"
+    >
+
+        <div class="info">
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Поставщик
+                </div>
+
+                <div
+                    class="info-value"
+                    id="supplier"
+                ></div>
+
+            </div>
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Дата
+                </div>
+
+                <div
+                    class="info-value"
+                    id="inventoryDate"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="message"
+            class="message hidden"
+        ></div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>№</th>
+                        <th>Товар</th>
+                        <th>Ед.</th>
+                        <th>Ост.</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="itemsTable"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="btn-success"
+                onclick="saveInventory()"
+            >
+                Сохранить
+            </button>
+
+            <button
+                class="btn-secondary"
+                onclick="newInventory()"
+            >
+                Новый
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ИСТОРИЯ
+    ========================================== -->
+
+    <div class="card">
+
+        <h2>История</h2>
+
+        <div id="history"></div>
+
+    </div>
+
+
+    <!-- =========================================
+         БАЗА ДАННЫХ
+    ========================================== -->
+
+    <div class="card">
+
+        <h2>База данных</h2>
+
+        <div class="database-buttons">
+
+            <button
+                class="btn-primary"
+                onclick="exportDatabase()"
+            >
+                Экспорт
+            </button>
+
+            <button
+                class="btn-secondary"
+                onclick="document.getElementById('importFile').click()"
+            >
+                Импорт
+            </button>
+
+        </div>
+
+        <input
+            type="file"
+            id="importFile"
+            class="file-input"
+            accept=".json,application/json"
+            onchange="importDatabase(event)"
+        >
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =============================================
+   НАСТРОЙКИ
+============================================= */
+
+const STORAGE_KEY =
+    "warehouse_inventory_history";
+
+let currentInventory = null;
+
+
+/* =============================================
+   ДАТА
+============================================= */
+
+function getCurrentDate() {
+
+    const now = new Date();
+
+    return now.toLocaleString(
+        "ru-RU",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
+
+/* =============================================
+   РАЗБОР СПИСКА
+============================================= */
+
+function parseList() {
+
+    const source =
+        document
+            .getElementById("sourceText")
+            .value
+            .trim();
+
+
+    if (!source) {
+
+        showMessage(
+            "Вставьте список товаров.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    let lines =
+        source
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line !== "");
+
+
+    /*
+     * Удаляем "Удалить".
+     */
+
+    lines =
+        lines.filter(
+            line =>
+                line.toLowerCase() !== "удалить"
+        );
+
+
+    const items = [];
+
+    let supplier = "";
+
+
+    /*
+     * Формат:
+     *
+     * Поставщик TAB Товар
+     * ящ
+     *
+     * Поставщик TAB Товар
+     * ящ
+     */
+
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
+
+        const line = lines[i];
+
+
+        /*
+         * Сначала пробуем TAB.
+         */
+
+        let parts =
+            line
+                .split(/\t+/)
+                .map(x => x.trim())
+                .filter(x => x);
+
+
+        /*
+         * Если TAB потерялся,
+         * пробуем несколько пробелов.
+         */
+
+        if (parts.length < 2) {
+
+            parts =
+                line
+                    .split(/\s{2,}/)
+                    .map(x => x.trim())
+                    .filter(x => x);
+
+        }
+
+
+        /*
+         * Поставщик + товар.
+         */
+
+        if (parts.length >= 2) {
+
+            const currentSupplier =
+                parts[0];
+
+
+            const productName =
+                parts
+                    .slice(1)
+                    .join(" ")
+                    .trim();
+
+
+            /*
+             * Поставщик сохраняется
+             * только один раз.
+             */
+
+            if (!supplier) {
+
+                supplier =
+                    currentSupplier;
+
+            }
+
+
+            /*
+             * Следующая строка —
+             * единица измерения.
+             */
+
+            let unit = "";
+
+
+            if (i + 1 < lines.length) {
+
+                unit =
+                    lines[i + 1].trim();
+
+            }
+
+
+            /*
+             * Добавляем товар.
+             */
+
+            items.push({
+
+                name: productName,
+
+                unit: unit,
+
+                stock: ""
+
+            });
+
+
+            /*
+             * Пропускаем строку единицы.
+             */
+
+            i++;
+
+        }
+
+    }
+
+
+    if (items.length === 0) {
+
+        showMessage(
+            "Не удалось распознать список.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentInventory = {
+
+        id: Date.now(),
+
+        date: getCurrentDate(),
+
+        supplier: supplier,
+
+        items: items
+
+    };
+
+
+    renderInventory();
+
+}
+
+
+/* =============================================
+   ОТОБРАЖЕНИЕ ОБХОДА
+============================================= */
+
+function renderInventory() {
+
+    document
+        .getElementById("inputCard")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("inventoryCard")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("supplier")
+        .textContent =
+            currentInventory.supplier;
+
+
+    document
+        .getElementById("inventoryDate")
+        .textContent =
+            currentInventory.date;
+
+
+    const tbody =
+        document.getElementById(
+            "itemsTable"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    currentInventory.items.forEach(
+        (item, index) => {
+
+            const tr =
+                document.createElement("tr");
+
+
+            tr.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td class="product-name">
+                    ${escapeHtml(item.name)}
+                </td>
+
+                <td class="unit">
+                    ${escapeHtml(item.unit)}
+                </td>
+
+                <td>
+
+                    <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        inputmode="decimal"
+                        class="stock-input"
+                        data-index="${index}"
+                        value="${escapeHtml(item.stock)}"
+                        placeholder="0"
+                    >
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(tr);
+
+        }
+    );
+
+
+    const firstInput =
+        document.querySelector(
+            ".stock-input"
+        );
+
+
+    if (firstInput) {
+        firstInput.focus();
+    }
+
+
+    hideMessage();
+
+}
+
+
+/* =============================================
+   СОХРАНЕНИЕ
+============================================= */
+
+function saveInventory() {
+
+    if (!currentInventory) {
+        return;
+    }
+
+
+    const inputs =
+        document.querySelectorAll(
+            ".stock-input"
+        );
+
+
+    inputs.forEach(input => {
+
+        const index =
+            Number(
+                input.dataset.index
+            );
+
+
+        currentInventory
+            .items[index]
+            .stock =
+                input.value;
+
+    });
+
+
+    let history = [];
+
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+    } catch {
+
+        history = [];
+
+    }
+
+
+    /*
+     * Создаём копию обхода.
+     */
+
+    history.unshift(
+        JSON.parse(
+            JSON.stringify(
+                currentInventory
+            )
+        )
+    );
+
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(history)
+    );
+
+
+    renderHistory();
+
+
+    showMessage(
+        "Обход сохранён.",
+        "success"
+    );
+
+}
+
+
+/* =============================================
+   НОВЫЙ ОБХОД
+============================================= */
+
+function newInventory() {
+
+    currentInventory = null;
+
+
+    document
+        .getElementById("inventoryCard")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("inputCard")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("sourceText")
+        .value = "";
+
+
+    hideMessage();
+
+}
+
+
+/* =============================================
+   ОЧИСТИТЬ
+============================================= */
+
+function clearInput() {
+
+    document
+        .getElementById("sourceText")
+        .value = "";
+
+}
+
+
+/* =============================================
+   ИСТОРИЯ
+============================================= */
+
+function renderHistory() {
+
+    const container =
+        document.getElementById(
+            "history"
+        );
+
+
+    let history = [];
+
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+    } catch {
+
+        history = [];
+
+    }
+
+
+    if (history.length === 0) {
+
+        container.innerHTML = `
+            <div class="history-empty">
+                Нет сохранённых обходов
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    history.forEach(
+        (inventory, index) => {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "history-item";
+
+
+            div.innerHTML = `
+
+                <div class="history-header">
+
+                    <div>
+
+                        <div class="history-supplier">
+                            ${escapeHtml(
+                                inventory.supplier
+                            )}
+                        </div>
+
+                        <div class="history-date">
+                            ${escapeHtml(
+                                inventory.date
+                            )}
+                        </div>
+
+                    </div>
+
+                    <div class="history-count">
+                        ${inventory.items.length}
+                        товаров
+                    </div>
+
+                </div>
+
+
+                <div class="history-buttons">
+
+                    <button
+                        class="btn-primary"
+                        onclick="openHistory(${index})"
+                    >
+                        Открыть
+                    </button>
+
+
+                    <button
+                        class="btn-danger"
+                        onclick="deleteHistory(${index})"
+                    >
+                        Удалить
+                    </button>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(div);
+
+        }
+    );
+
+}
+
+
+/* =============================================
+   ОТКРЫТЬ ИСТОРИЮ
+============================================= */
+
+function openHistory(index) {
+
+    let history = [];
+
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+    } catch {
+
+        return;
+
+    }
+
+
+    if (!history[index]) {
+        return;
+    }
+
+
+    currentInventory =
+        JSON.parse(
+            JSON.stringify(
+                history[index]
+            )
+        );
+
+
+    renderInventory();
+
+}
+
+
+/* =============================================
+   УДАЛИТЬ ОБХОД
+============================================= */
+
+function deleteHistory(index) {
+
+    if (
+        !confirm(
+            "Удалить этот обход?"
+        )
+    ) {
+        return;
+    }
+
+
+    let history = [];
+
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+    } catch {
+
+        history = [];
+
+    }
+
+
+    history.splice(index, 1);
+
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(history)
+    );
+
+
+    renderHistory();
+
+}
+
+
+/* =============================================
+   ЭКСПОРТ БАЗЫ
+============================================= */
+
+function exportDatabase() {
+
+    let history = [];
+
+
+    try {
+
+        history =
+            JSON.parse(
+                localStorage.getItem(
+                    STORAGE_KEY
+                ) || "[]"
+            );
+
+    } catch {
+
+        history = [];
+
+    }
+
+
+    if (history.length === 0) {
+
+        alert(
+            "База данных пустая."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Формируем файл.
+     */
+
+    const database = {
+
+        version: 1,
+
+        exportedAt:
+            new Date().toISOString(),
+
+        records: history
+
+    };
+
+
+    const json =
+        JSON.stringify(
+            database,
+            null,
+            2
+        );
+
+
+    const blob =
+        new Blob(
+            [json],
+            {
+                type: "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+
+    /*
+     * Имя файла.
+     */
+
+    const date =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+
+    link.download =
+        `warehouse-backup-${date}.json`;
+
+
+    document.body.appendChild(link);
+
+
+    link.click();
+
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =============================================
+   ИМПОРТ БАЗЫ
+============================================= */
+
+function importDatabase(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+
+                /*
+                 * Поддерживаем новый формат:
+                 *
+                 * {
+                 *   version: 1,
+                 *   exportedAt: "...",
+                 *   records: [...]
+                 * }
+                 */
+
+                let records;
+
+
+                if (
+                    data &&
+                    Array.isArray(
+                        data.records
+                    )
+                ) {
+
+                    records =
+                        data.records;
+
+                }
+
+                /*
+                 * Также поддерживаем
+                 * старый простой массив,
+                 * если он был сохранён раньше.
+                 */
+
+                else if (
+                    Array.isArray(data)
+                ) {
+
+                    records = data;
+
+                }
+
+                else {
+
+                    throw new Error(
+                        "Неверный формат базы"
+                    );
+
+                }
+
+
+                /*
+                 * Проверяем структуру.
+                 */
+
+                const valid =
+                    records.every(
+                        record =>
+
+                            record &&
+                            typeof record === "object" &&
+                            typeof record.supplier === "string" &&
+                            typeof record.date === "string" &&
+                            Array.isArray(record.items)
+
+                    );
+
+
+                if (!valid) {
+
+                    throw new Error(
+                        "Файл содержит некорректные данные"
+                    );
+
+                }
+
+
+                /*
+                 * Подтверждение.
+                 */
+
+                const confirmed =
+                    confirm(
+                        "Импорт заменит текущую базу.\n\n" +
+                        "Записей в файле: " +
+                        records.length +
+                        "\n\nПродолжить?"
+                    );
+
+
+                if (!confirmed) {
+
+                    event.target.value = "";
+
+                    return;
+
+                }
+
+
+                /*
+                 * Сохраняем импортированную базу.
+                 */
+
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(records)
+                );
+
+
+                /*
+                 * Обновляем историю.
+                 */
+
+                renderHistory();
+
+
+                alert(
+                    "База успешно импортирована.\n\n" +
+                    "Загружено записей: " +
+                    records.length
+                );
+
+
+            } catch (error) {
+
+                alert(
+                    "Ошибка импорта.\n\n" +
+                    "Файл не является корректной базой данных."
+                );
+
+            }
+
+
+            /*
+             * Сбрасываем input файла,
+             * чтобы можно было повторно
+             * выбрать тот же файл.
+             */
+
+            event.target.value = "";
+
+        };
+
+
+    reader.readAsText(file);
+
+}
+
+
+/* =============================================
+   СООБЩЕНИЯ
+============================================= */
+
+function showMessage(text, type) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent = text;
+
+
+    message.className =
+        "message " +
+        (
+            type === "error"
+                ? "message-error"
+                : "message-success"
+        );
+
+}
+
+
+function hideMessage() {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.className =
+        "message hidden";
+
+
+    message.textContent = "";
+
+}
+
+
+/* =============================================
+   ЗАЩИТА HTML
+============================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =============================================
+   ЗАПУСК
+============================================= */
+
+renderHistory();
+
+</script>
+
+</body>
+</html>

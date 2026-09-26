@@ -1,0 +1,3637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Оператор заказов</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+    --bg:#eef1f4;
+    --panel:#fff;
+    --line:#cfd5dc;
+    --line2:#e5e8ec;
+    --text:#20252b;
+    --muted:#68727d;
+    --blue:#2563eb;
+    --blue2:#e8f0ff;
+    --green:#16803c;
+    --green2:#e8f7ee;
+    --red:#c62828;
+    --red2:#fdecec;
+    --yellow:#9a6700;
+    --yellow2:#fff7d6;
+    --head:#f4f6f8;
+    --hover:#f5f8fb;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    font-size:13px;
+}
+
+button,input,select,textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+/* TOP */
+
+.topbar{
+    height:48px;
+    min-height:48px;
+    background:#20252b;
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    gap:14px;
+}
+
+.logo{
+    font-size:15px;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.top-status{
+    margin-left:auto;
+    color:#b9c1ca;
+    font-size:12px;
+}
+
+/* TABS */
+
+.tabs{
+    height:38px;
+    min-height:38px;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:stretch;
+    overflow-x:auto;
+}
+
+.tab{
+    border:0;
+    border-right:1px solid var(--line2);
+    background:#fff;
+    padding:0 14px;
+    color:#4b5560;
+    white-space:nowrap;
+}
+
+.tab:hover{
+    background:#f5f6f7;
+}
+
+.tab.active{
+    color:#1456c3;
+    background:#edf4ff;
+    box-shadow:inset 0 -2px 0 #2563eb;
+    font-weight:bold;
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    padding:10px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+    background:#fff;
+    border:1px solid var(--line);
+    padding:6px;
+    margin-bottom:8px;
+}
+
+.toolbar-title{
+    font-size:14px;
+    font-weight:bold;
+    margin-right:8px;
+}
+
+.spacer{
+    flex:1;
+}
+
+.btn{
+    height:28px;
+    padding:0 10px;
+    border:1px solid #b9c0c8;
+    background:#fff;
+    border-radius:3px;
+    color:#303840;
+}
+
+.btn:hover{
+    background:#f3f5f7;
+}
+
+.btn.primary{
+    background:var(--blue);
+    color:white;
+    border-color:var(--blue);
+}
+
+.btn.primary:hover{
+    background:#1d4ed8;
+}
+
+.btn.success{
+    background:var(--green);
+    color:white;
+    border-color:var(--green);
+}
+
+.btn.danger{
+    background:white;
+    color:var(--red);
+    border-color:#e0aaaa;
+}
+
+.btn.small{
+    height:24px;
+    padding:0 7px;
+    font-size:12px;
+}
+
+input,select,textarea{
+    border:1px solid #bbc2ca;
+    border-radius:3px;
+    background:white;
+    color:var(--text);
+    padding:5px 7px;
+    height:28px;
+}
+
+textarea{
+    height:auto;
+    min-height:100px;
+    resize:vertical;
+}
+
+input:focus,select:focus,textarea:focus{
+    outline:1px solid #75a7ff;
+    border-color:#5791ef;
+}
+
+.search{
+    min-width:220px;
+}
+
+/* TABLE */
+
+.table-wrap{
+    background:#fff;
+    border:1px solid var(--line);
+    overflow:auto;
+    max-height:calc(100vh - 135px);
+}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:700px;
+}
+
+th{
+    position:sticky;
+    top:0;
+    z-index:2;
+    background:#e9edf1;
+    border-bottom:1px solid #c4cad1;
+    border-right:1px solid #d4d9df;
+    padding:5px 7px;
+    text-align:left;
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+td{
+    border-bottom:1px solid #e3e6e9;
+    border-right:1px solid #edf0f2;
+    padding:3px 6px;
+    height:30px;
+    vertical-align:middle;
+}
+
+tbody tr:hover{
+    background:var(--hover);
+}
+
+td input,td select{
+    width:100%;
+    height:25px;
+    padding:2px 5px;
+}
+
+.num{
+    text-align:right;
+}
+
+.center{
+    text-align:center;
+}
+
+.muted{
+    color:var(--muted);
+}
+
+.badge{
+    display:inline-block;
+    padding:2px 6px;
+    border-radius:3px;
+    font-size:11px;
+    border:1px solid var(--line);
+    background:#f7f8f9;
+}
+
+.badge.green{
+    color:var(--green);
+    background:var(--green2);
+    border-color:#b8dfc6;
+}
+
+.badge.yellow{
+    color:var(--yellow);
+    background:var(--yellow2);
+    border-color:#e7d37e;
+}
+
+.badge.red{
+    color:var(--red);
+    background:var(--red2);
+    border-color:#e7b0b0;
+}
+
+/* DASHBOARD */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(130px,1fr));
+    gap:8px;
+    margin-bottom:10px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid var(--line);
+    padding:10px;
+}
+
+.card-title{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+}
+
+.card-value{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:4px;
+}
+
+/* MODAL */
+
+.modal-back{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.modal-back.show{
+    display:flex;
+}
+
+.modal{
+    width:min(720px,95vw);
+    max-height:90vh;
+    overflow:auto;
+    background:#fff;
+    border:1px solid #aeb5bd;
+    box-shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+.modal-head{
+    height:40px;
+    background:#eef1f4;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    font-weight:bold;
+}
+
+.modal-body{
+    padding:10px;
+}
+
+.modal-foot{
+    border-top:1px solid var(--line);
+    padding:7px 10px;
+    display:flex;
+    justify-content:flex-end;
+    gap:6px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:7px 10px;
+    align-items:center;
+}
+
+.form-grid label{
+    color:#56616c;
+}
+
+.day-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:4px;
+}
+
+.day{
+    border:1px solid var(--line);
+    background:#f8f9fa;
+    padding:6px;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+}
+
+.day input{
+    display:none;
+}
+
+.day.checked{
+    background:#dceaff;
+    border-color:#7ba9ef;
+    color:#1254b5;
+    font-weight:bold;
+}
+
+/* REQUEST */
+
+.request-box{
+    background:#fff;
+    border:1px solid var(--line);
+    padding:8px;
+    margin-bottom:8px;
+}
+
+.request-head{
+    display:grid;
+    /* grid-template-columns:180px 180px 180px 1fr; */
+    gap:6px;
+}
+
+.request-line{
+    display:grid;
+    grid-template-columns:1fr 110px 110px 110px 110px 80px;
+    gap:4px;
+    align-items:center;
+    border-bottom:1px solid #e7e9eb;
+    padding:4px 0;
+}
+
+.request-line:last-child{
+    border-bottom:0;
+}
+
+.request-line input{
+    width:100%;
+}
+
+.qty{
+    text-align:right;
+}
+
+/* IMPORT */
+
+.import-area{
+    width:100%;
+    min-height:300px;
+    font-family:Consolas,monospace;
+    font-size:12px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .request-head{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .request-line{
+        grid-template-columns:1fr 90px 90px;
+    }
+
+    .request-line .hide-mobile{
+        display:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="topbar">
+        <div class="logo">Оператор заказов</div>
+        <div class="top-status" id="saveStatus">Локальная база</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-page="dashboard">Главная</button>
+        <button class="tab" data-page="suppliers">Поставщики</button>
+        <button class="tab" data-page="products">Товары</button>
+        <button class="tab" data-page="relations">Товары / поставщики</button>
+        <button class="tab" data-page="stores">Магазины</button>
+        <button class="tab" data-page="schedule">График</button>
+        <button class="tab" data-page="stock">Остатки</button>
+        <button class="tab" data-page="requests">Заявки</button>
+        <button class="tab" data-page="history">История</button>
+        <button class="tab" data-page="database">База JSON</button>
+    </div>
+
+    <main class="content">
+
+        <!-- DASHBOARD -->
+
+        <section class="page active" id="page-dashboard">
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-title">Поставщики</div>
+                    <div class="card-value" id="statSuppliers">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Товары</div>
+                    <div class="card-value" id="statProducts">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Магазины</div>
+                    <div class="card-value" id="statStores">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Связи</div>
+                    <div class="card-value" id="statRelations">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Заявки</div>
+                    <div class="card-value" id="statRequests">0</div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <span class="toolbar-title">Быстрые действия</span>
+                <button class="btn primary" onclick="openRequestCreator()">Создать заявку</button>
+                <button class="btn" onclick="goPage('stock')">Внести остатки</button>
+                <button class="btn" onclick="goPage('schedule')">График поставок</button>
+                <button class="btn" onclick="goPage('database')">Импорт / экспорт</button>
+            </div>
+
+            <div class="toolbar">
+                <span class="toolbar-title">Сегодня</span>
+                <span id="todayText"></span>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Поставщик</th>
+                            <th>Магазин</th>
+                            <th>День заявки</th>
+                            <th>День доставки</th>
+                            <th>Товаров</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardSchedule"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- SUPPLIERS -->
+
+        <section class="page" id="page-suppliers">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Поставщики</span>
+                <input class="search" id="supplierSearch" placeholder="Поиск..." oninput="renderSuppliers()">
+                <span class="spacer"></span>
+                <button class="btn primary" onclick="addSupplier()">+ Поставщик</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:55px">ID</th>
+                            <th>Наименование</th>
+                            <th style="width:130px">Телефон</th>
+                            <th style="width:90px">Связей</th>
+                            <th style="width:90px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliersTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- PRODUCTS -->
+
+        <section class="page" id="page-products">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Товары</span>
+                <input class="search" id="productSearch" placeholder="Поиск..." oninput="renderProducts()">
+
+                <select id="productSupplierFilter" onchange="renderProducts()">
+                    <option value="">Все поставщики</option>
+                </select>
+
+                <span class="spacer"></span>
+                <button class="btn primary" onclick="addProduct()">+ Товар</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:55px">ID</th>
+                            <th>Наименование</th>
+                            <th style="width:100px">Ед.</th>
+                            <th style="width:110px">Поставщиков</th>
+                            <th style="width:100px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- RELATIONS -->
+
+        <section class="page" id="page-relations">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Товар / поставщик</span>
+
+                <select id="relationSupplierFilter" onchange="renderRelations()">
+                    <option value="">Все поставщики</option>
+                </select>
+
+                <select id="relationProductFilter" onchange="renderRelations()">
+                    <option value="">Все товары</option>
+                </select>
+
+                <input class="search" id="relationSearch" placeholder="Поиск..." oninput="renderRelations()">
+
+                <span class="spacer"></span>
+
+                <button class="btn primary" onclick="addRelation()">+ Связь</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Поставщик</th>
+                            <th>Товар</th>
+                            <th style="width:120px">Цена</th>
+                            <th style="width:80px">Ед.</th>
+                            <th style="width:100px">Активен</th>
+                            <th style="width:120px">Примечание</th>
+                            <th style="width:100px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relationsTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- STORES -->
+
+        <section class="page" id="page-stores">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Магазины</span>
+                <span class="spacer"></span>
+                <button class="btn primary" onclick="addStore()">+ Магазин</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:55px">ID</th>
+                            <th>Наименование</th>
+                            <th>Адрес</th>
+                            <th style="width:130px">Телефон</th>
+                            <th style="width:90px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="storesTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- SCHEDULE -->
+
+        <section class="page" id="page-schedule">
+
+            <div class="toolbar">
+                <span class="toolbar-title">График заявок и доставок</span>
+                <span class="spacer"></span>
+                <button class="btn primary" onclick="addSchedule()">+ График</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Поставщик</th>
+                            <th>Магазин</th>
+                            <th>Дни заявок</th>
+                            <th>Дни доставки</th>
+                            <th style="width:100px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- STOCK -->
+
+        <section class="page" id="page-stock">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Остатки</span>
+
+                <label>Дата:
+                    <input type="date" id="stockDate" onchange="renderStock()">
+                </label>
+
+                <select id="stockStore" onchange="renderStock()"></select>
+
+                <input class="search" id="stockSearch" placeholder="Поиск товара..." oninput="renderStock()">
+
+                <span class="spacer"></span>
+                <button class="btn success" onclick="saveStockSnapshot()">Сохранить остатки</button>
+            </div>
+
+            <div class="toolbar">
+                <span class="muted">
+                    Остаток фиксируется отдельно по дате и магазину.
+                    Расход задается отдельно и не зависит от поставщика.
+                </span>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Товар</th>
+                            <th style="width:110px">Остаток</th>
+                            <th style="width:110px">Расход / день</th>
+                            <th style="width:110px">На дней</th>
+                            <th style="width:100px">Сохранено</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- REQUESTS -->
+
+        <section class="page" id="page-requests">
+
+            <div class="toolbar">
+                <span class="toolbar-title">Создание заявки</span>
+                <button class="btn primary" onclick="openRequestCreator()">+ Новая заявка</button>
+                <button class="btn" onclick="goPage('history')">История заявок</button>
+            </div>
+
+            <div id="requestEditor"></div>
+
+        </section>
+
+        <!-- HISTORY -->
+
+        <section class="page" id="page-history">
+
+            <div class="toolbar">
+                <span class="toolbar-title">История заявок</span>
+
+                <input type="date" id="historyDate" onchange="renderHistory()">
+
+                <select id="historyStore" onchange="renderHistory()">
+                    <option value="">Все магазины</option>
+                </select>
+
+                <select id="historySupplier" onchange="renderHistory()">
+                    <option value="">Все поставщики</option>
+                </select>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Магазин</th>
+                            <th>Поставщик</th>
+                            <th>Товаров</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- DATABASE -->
+
+        <section class="page" id="page-database">
+
+            <div class="toolbar">
+                <span class="toolbar-title">База данных</span>
+                <button class="btn success" onclick="exportJSON()">Экспорт JSON</button>
+                <button class="btn" onclick="document.getElementById('jsonFile').click()">Импорт файла</button>
+                <button class="btn danger" onclick="clearDatabase()">Очистить базу</button>
+                <input type="file" id="jsonFile" accept=".json,application/json" hidden onchange="importJSONFile(event)">
+            </div>
+
+            <div class="toolbar">
+                <span class="muted">
+                    Можно вставить сюда JSON из старой базы. Формат supplierProducts из твоей базы
+                    автоматически преобразуется в таблицу связей.
+                </span>
+            </div>
+
+            <textarea id="jsonArea" class="import-area" placeholder="Вставь сюда JSON базы..."></textarea>
+
+            <div class="toolbar">
+                <button class="btn primary" onclick="importJSONText()">Импортировать JSON из поля</button>
+                <button class="btn" onclick="loadJSONToEditor()">Показать текущую базу</button>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal-back" id="modalBack">
+    <div class="modal">
+
+        <div class="modal-head" id="modalTitle"></div>
+
+        <div class="modal-body" id="modalBody"></div>
+
+        <div class="modal-foot">
+            <button class="btn" onclick="closeModal()">Отмена</button>
+            <button class="btn primary" id="modalSave">Сохранить</button>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+/* =========================================================
+   DATABASE
+========================================================= */
+
+const DB_KEY = "purchase_manager_database_v3";
+
+let db = {
+    version: 3,
+
+    suppliers: [],
+    products: [],
+
+    /*
+      Главная таблица связи.
+
+      Именно здесь хранится цена товара у конкретного поставщика.
+
+      supplierId
+      productId
+      price
+      unit
+      active
+      note
+    */
+    supplierProducts: [],
+
+    stores: [],
+
+    /*
+      supplierId + storeId
+
+      orderDays:
+      0 = воскресенье
+      1 = понедельник
+      ...
+      6 = суббота
+
+      deliveryDays — аналогично
+    */
+    schedules: [],
+
+    /*
+      Остатки:
+
+      date
+      storeId
+      productId
+      qty
+    */
+    stockSnapshots: [],
+
+    /*
+      Расход:
+
+      storeId
+      productId
+      dailyConsumption
+    */
+    consumption: [],
+
+    /*
+      Заявки
+    */
+    requests: []
+};
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadDB();
+
+    document.getElementById("stockDate").value = today();
+
+    document.getElementById("todayText").textContent =
+        new Date().toLocaleDateString("ru-RU",{
+            weekday:"long",
+            year:"numeric",
+            month:"long",
+            day:"numeric"
+        });
+
+    initTabs();
+    renderAll();
+});
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function loadDB(){
+
+    const raw = localStorage.getItem(DB_KEY);
+
+    if(!raw){
+        saveDB();
+        return;
+    }
+
+    try{
+        const imported = JSON.parse(raw);
+        db = normalizeDatabase(imported);
+    }
+    catch(e){
+        console.error(e);
+        alert("Ошибка чтения локальной базы. Будет создана новая база.");
+        saveDB();
+    }
+}
+
+
+function saveDB(){
+
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+
+    const status = document.getElementById("saveStatus");
+
+    if(status){
+        status.textContent =
+            "Сохранено " +
+            new Date().toLocaleTimeString("ru-RU");
+    }
+}
+
+
+/* =========================================================
+   NORMALIZE
+========================================================= */
+
+function normalizeDatabase(data){
+
+    const result = {
+        version:3,
+        suppliers:Array.isArray(data.suppliers) ? data.suppliers : [],
+        products:Array.isArray(data.products) ? data.products : [],
+        supplierProducts:[],
+        stores:Array.isArray(data.stores) ? data.stores : [],
+        schedules:Array.isArray(data.schedules) ? data.schedules : [],
+        stockSnapshots:Array.isArray(data.stockSnapshots) ? data.stockSnapshots : [],
+        consumption:Array.isArray(data.consumption) ? data.consumption : [],
+        requests:Array.isArray(data.requests) ? data.requests : []
+    };
+
+
+    /*
+      Поддержка старого формата:
+
+      "supplierProducts": {
+          "1":[165,166],
+          "22":[69,139]
+      }
+    */
+
+    if(data.supplierProducts && !Array.isArray(data.supplierProducts)){
+
+        Object.keys(data.supplierProducts).forEach(supplierId => {
+
+            const products = data.supplierProducts[supplierId] || [];
+
+            products.forEach(productId => {
+
+                result.supplierProducts.push({
+                    id:nextId(result.supplierProducts),
+                    supplierId:Number(supplierId),
+                    productId:Number(productId),
+                    price:"",
+                    unit:"",
+                    active:true,
+                    note:""
+                });
+
+            });
+
+        });
+
+    }
+    else if(Array.isArray(data.supplierProducts)){
+
+        result.supplierProducts = data.supplierProducts.map(x => ({
+            id:x.id || crypto.randomUUID(),
+            supplierId:Number(x.supplierId),
+            productId:Number(x.productId),
+            price:x.price ?? "",
+            unit:x.unit ?? "",
+            active:x.active !== false,
+            note:x.note ?? ""
+        }));
+
+    }
+
+
+    return result;
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function today(){
+    const d = new Date();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${d.getFullYear()}-${m}-${day}`;
+}
+function nextId(arr){
+    const nums = arr.map(x => Number(x.id)).filter(Number.isFinite);
+    return nums.length ? Math.max(...nums)+1 : 1;
+}
+function esc(value){
+    return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function supplierName(id){
+
+    const s = db.suppliers.find(x => Number(x.id) === Number(id));
+
+    return s ? s.name : "—";
+}
+function productName(id){
+
+    const p = db.products.find(x => Number(x.id) === Number(id));
+
+    return p ? p.name : "—";
+}
+function storeName(id){
+
+    const s = db.stores.find(x => Number(x.id) === Number(id));
+
+    return s ? s.name : "—";
+}
+function formatQty(v){
+
+    if(v === "" || v === null || v === undefined) return "";
+
+    const n = Number(v);
+
+    if(!Number.isFinite(n)) return "";
+
+    return Number.isInteger(n) ? String(n) : n.toFixed(2);
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function initTabs(){
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            goPage(tab.dataset.page);
+        });
+    });
+}
+function goPage(page){
+    document.querySelectorAll(".tab").forEach(x => {
+        x.classList.toggle("active", x.dataset.page === page);
+    });
+    document.querySelectorAll(".page").forEach(x => {
+        x.classList.toggle("active", x.id === "page-"+page);
+    });
+    renderAll();
+}
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
+
+function renderAll(){
+    renderStats();
+    renderSuppliers();
+    renderProducts();
+    renderRelations();
+    renderStores();
+    renderSchedule();
+    fillFilters();
+    renderStock();
+    renderHistory();
+    renderDashboardSchedule();
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderStats(){
+    document.getElementById("statSuppliers").textContent = db.suppliers.length;
+    document.getElementById("statProducts").textContent = db.products.length;
+    document.getElementById("statStores").textContent = db.stores.length;
+    document.getElementById("statRelations").textContent = db.supplierProducts.length;
+    document.getElementById("statRequests").textContent = db.requests.length;
+}
+
+
+/* =========================================================
+   SUPPLIERS
+========================================================= */
+
+function renderSuppliers(){
+    const tbody = document.getElementById("suppliersTable");
+    if(!tbody) return;
+    const search = (document.getElementById("supplierSearch")?.value || "").toLowerCase();
+    const rows = db.suppliers.filter(s => s.name.toLowerCase().includes(search));
+
+    tbody.innerHTML = rows.map(s => {
+        const count = db.supplierProducts.filter(r => Number(r.supplierId) === Number(s.id)).length;
+
+        return `
+        <tr>
+            <td>${esc(s.id)}</td>
+
+            <td>
+                <input
+                    value="${esc(s.name)}"
+                    onchange="updateSupplier(${s.id},this.value)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(s.phone || "")}"
+                    placeholder="+7..."
+                    onchange="updateSupplierPhone(${s.id},this.value)"
+                >
+            </td>
+
+            <td class="center">
+                <span class="badge">${count}</span>
+            </td>
+
+            <td class="center">
+                <button
+                    class="btn small danger"
+                    onclick="deleteSupplier(${s.id})"
+                >Удалить</button>
+            </td>
+        </tr>
+        `;
+
+    }).join("");
+
+}
+
+
+function updateSupplier(id,value){
+
+    const s = db.suppliers.find(x => Number(x.id) === Number(id));
+
+    if(s){
+        s.name = value.trim();
+        saveDB();
+        renderAll();
+    }
+}
+
+
+function updateSupplierPhone(id,value){
+
+    const s = db.suppliers.find(x => Number(x.id) === Number(id));
+
+    if(s){
+        s.phone = value.trim();
+        saveDB();
+    }
+}
+
+
+function addSupplier(){
+
+    openModal(
+        "Новый поставщик",
+        `
+        <div class="form-grid">
+            <label>Наименование</label>
+            <input id="mSupplierName" autofocus>
+
+            <label>Телефон</label>
+            <input id="mSupplierPhone" placeholder="+7...">
+        </div>
+        `,
+        () => {
+
+            const name =
+                document.getElementById("mSupplierName").value.trim();
+
+            if(!name){
+                alert("Введите наименование.");
+                return false;
+            }
+
+            db.suppliers.push({
+                id:nextId(db.suppliers),
+                name,
+                phone:document.getElementById("mSupplierPhone").value.trim()
+            });
+
+            saveDB();
+            renderAll();
+
+            return true;
+        }
+    );
+
+}
+
+
+function deleteSupplier(id){
+
+    const has =
+        db.supplierProducts.some(
+            x => Number(x.supplierId) === Number(id)
+        );
+
+    if(has){
+
+        if(!confirm(
+            "У поставщика есть товары. Удалить поставщика и все его связи?"
+        )) return;
+
+        db.supplierProducts =
+            db.supplierProducts.filter(
+                x => Number(x.supplierId) !== Number(id)
+            );
+    }
+    else{
+
+        if(!confirm("Удалить поставщика?")) return;
+
+    }
+
+    db.suppliers =
+        db.suppliers.filter(
+            x => Number(x.id) !== Number(id)
+        );
+
+    db.schedules =
+        db.schedules.filter(
+            x => Number(x.supplierId) !== Number(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+function renderProducts(){
+
+    const tbody = document.getElementById("productsTable");
+
+    if(!tbody) return;
+
+    const search =
+        (document.getElementById("productSearch")?.value || "")
+        .toLowerCase();
+
+    const supplierFilter =
+        document.getElementById("productSupplierFilter")?.value || "";
+
+    const rows = db.products.filter(p => {
+
+        if(
+            search &&
+            !p.name.toLowerCase().includes(search)
+        ) return false;
+
+        if(supplierFilter){
+
+            const exists =
+                db.supplierProducts.some(r =>
+                    Number(r.productId) === Number(p.id) &&
+                    Number(r.supplierId) === Number(supplierFilter)
+                );
+
+            if(!exists) return false;
+        }
+
+        return true;
+
+    });
+
+
+    tbody.innerHTML = rows.map(p => {
+
+        const count =
+            db.supplierProducts.filter(
+                r => Number(r.productId) === Number(p.id)
+            ).length;
+
+        return `
+        <tr>
+            <td>${esc(p.id)}</td>
+
+            <td>
+                <input
+                    value="${esc(p.name)}"
+                    onchange="updateProduct(${p.id},this.value)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(p.unit || "")}"
+                    placeholder="шт / кг"
+                    onchange="updateProductUnit(${p.id},this.value)"
+                >
+            </td>
+
+            <td class="center">
+                <span class="badge">${count}</span>
+            </td>
+
+            <td class="center">
+                <button
+                    class="btn small danger"
+                    onclick="deleteProduct(${p.id})"
+                >Удалить</button>
+            </td>
+        </tr>
+        `;
+
+    }).join("");
+
+}
+
+
+function updateProduct(id,value){
+
+    const p =
+        db.products.find(x => Number(x.id) === Number(id));
+
+    if(p){
+
+        p.name = value.trim();
+
+        saveDB();
+        renderAll();
+
+    }
+}
+
+
+function updateProductUnit(id,value){
+
+    const p =
+        db.products.find(x => Number(x.id) === Number(id));
+
+    if(p){
+
+        p.unit = value.trim();
+
+        saveDB();
+
+    }
+}
+
+
+function addProduct(){
+
+    openModal(
+        "Новый товар",
+        `
+        <div class="form-grid">
+
+            <label>Наименование</label>
+            <input id="mProductName" autofocus>
+
+            <label>Единица</label>
+            <input id="mProductUnit" placeholder="шт / кг / л">
+
+        </div>
+        `,
+        () => {
+
+            const name =
+                document.getElementById("mProductName").value.trim();
+
+            if(!name){
+                alert("Введите название товара.");
+                return false;
+            }
+
+            db.products.push({
+                id:nextId(db.products),
+                name,
+                unit:document.getElementById("mProductUnit").value.trim()
+            });
+
+            saveDB();
+            renderAll();
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function deleteProduct(id){
+
+    if(!confirm("Удалить товар? Его связи также будут удалены.")){
+        return;
+    }
+
+    db.products =
+        db.products.filter(
+            x => Number(x.id) !== Number(id)
+        );
+
+    db.supplierProducts =
+        db.supplierProducts.filter(
+            x => Number(x.productId) !== Number(id)
+        );
+
+    db.consumption =
+        db.consumption.filter(
+            x => Number(x.productId) !== Number(id)
+        );
+
+    db.stockSnapshots =
+        db.stockSnapshots.filter(
+            x => Number(x.productId) !== Number(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   RELATIONS
+========================================================= */
+
+function renderRelations(){
+
+    const tbody = document.getElementById("relationsTable");
+
+    if(!tbody) return;
+
+    const sf = document.getElementById("relationSupplierFilter")?.value || "";
+
+    const pf = document.getElementById("relationProductFilter")?.value || "";
+
+    const search = (document.getElementById("relationSearch")?.value || "").toLowerCase();
+
+    const rows =
+        db.supplierProducts.filter(r => {
+
+            if(
+                sf &&
+                Number(r.supplierId) !== Number(sf)
+            ) return false;
+
+            if(
+                pf &&
+                Number(r.productId) !== Number(pf)
+            ) return false;
+
+            if(search){
+
+                const text =
+                    (
+                        supplierName(r.supplierId) +
+                        " " +
+                        productName(r.productId)
+                    ).toLowerCase();
+
+                if(!text.includes(search)) return false;
+            }
+
+            return true;
+
+        });
+
+
+    tbody.innerHTML = rows.map(r => {
+
+        const product =
+            db.products.find(
+                p => Number(p.id) === Number(r.productId)
+            );
+
+        return `
+        <tr>
+
+            <td>
+                ${esc(supplierName(r.supplierId))}
+            </td>
+
+            <td>
+                ${esc(productName(r.productId))}
+            </td>
+
+            <td>
+                <input
+                    type="number"
+                    step="0.01"
+                    value="${esc(r.price)}"
+                    onchange="updateRelation(${r.id},'price',this.value)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(r.unit || product?.unit || "")}"
+                    onchange="updateRelation(${r.id},'unit',this.value)"
+                >
+            </td>
+
+            <td class="center">
+                <input
+                    type="checkbox"
+                    ${r.active !== false ? "checked":""}
+                    onchange="updateRelation(${r.id},'active',this.checked)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(r.note || "")}"
+                    onchange="updateRelation(${r.id},'note',this.value)"
+                >
+            </td>
+
+            <td class="center">
+                <button
+                    class="btn small danger"
+                    onclick="deleteRelation(${r.id})"
+                >Удалить</button>
+            </td>
+
+        </tr>
+        `;
+
+    }).join("");
+
+}
+
+
+function updateRelation(id,key,value){
+
+    const r =
+        db.supplierProducts.find(
+            x => Number(x.id) === Number(id)
+        );
+
+    if(!r) return;
+
+    r[key] = key === "active"
+        ? Boolean(value)
+        : value;
+
+    saveDB();
+}
+
+
+function addRelation(){
+
+    if(!db.suppliers.length || !db.products.length){
+
+        alert("Сначала добавьте поставщика и товар.");
+        return;
+
+    }
+
+
+    const supplierOptions =
+        db.suppliers.map(s =>
+            `<option value="${s.id}">
+                ${esc(s.name)}
+            </option>`
+        ).join("");
+
+
+    const productOptions =
+        db.products.map(p =>
+            `<option value="${p.id}">
+                ${esc(p.name)}
+            </option>`
+        ).join("");
+
+
+    openModal(
+        "Новая связь товар / поставщик",
+        `
+        <div class="form-grid">
+
+            <label>Поставщик</label>
+            <select id="mRelationSupplier">
+                ${supplierOptions}
+            </select>
+
+            <label>Товар</label>
+            <select id="mRelationProduct">
+                ${productOptions}
+            </select>
+
+            <label>Цена</label>
+            <input id="mRelationPrice" type="number" step="0.01">
+
+            <label>Единица</label>
+            <input id="mRelationUnit">
+
+            <label>Примечание</label>
+            <input id="mRelationNote">
+
+        </div>
+        `,
+        () => {
+
+            const supplierId =
+                Number(document.getElementById("mRelationSupplier").value);
+
+            const productId =
+                Number(document.getElementById("mRelationProduct").value);
+
+
+            const exists =
+                db.supplierProducts.some(r =>
+                    Number(r.supplierId) === supplierId &&
+                    Number(r.productId) === productId
+                );
+
+            if(exists){
+
+                alert("Такая связь уже существует.");
+                return false;
+
+            }
+
+
+            db.supplierProducts.push({
+
+                id:nextId(db.supplierProducts),
+
+                supplierId,
+
+                productId,
+
+                price:
+                    document.getElementById("mRelationPrice").value,
+
+                unit:
+                    document.getElementById("mRelationUnit").value,
+
+                active:true,
+
+                note:
+                    document.getElementById("mRelationNote").value
+
+            });
+
+
+            saveDB();
+            renderAll();
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function deleteRelation(id){
+
+    if(!confirm("Удалить связь?")) return;
+
+    db.supplierProducts =
+        db.supplierProducts.filter(
+            x => Number(x.id) !== Number(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   STORES
+========================================================= */
+
+function renderStores(){
+
+    const tbody =
+        document.getElementById("storesTable");
+
+    if(!tbody) return;
+
+    tbody.innerHTML =
+        db.stores.map(s => `
+        <tr>
+
+            <td>${esc(s.id)}</td>
+
+            <td>
+                <input
+                    value="${esc(s.name)}"
+                    onchange="updateStore(${s.id},'name',this.value)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(s.address || "")}"
+                    onchange="updateStore(${s.id},'address',this.value)"
+                >
+            </td>
+
+            <td>
+                <input
+                    value="${esc(s.phone || "")}"
+                    onchange="updateStore(${s.id},'phone',this.value)"
+                >
+            </td>
+
+            <td class="center">
+                <button
+                    class="btn small danger"
+                    onclick="deleteStore(${s.id})"
+                >Удалить</button>
+            </td>
+
+        </tr>
+        `).join("");
+
+}
+
+
+function updateStore(id,key,value){
+
+    const s =
+        db.stores.find(
+            x => Number(x.id) === Number(id)
+        );
+
+    if(s){
+
+        s[key] = value.trim();
+
+        saveDB();
+        renderAll();
+
+    }
+}
+
+
+function addStore(){
+
+    openModal(
+        "Новый магазин",
+        `
+        <div class="form-grid">
+
+            <label>Наименование</label>
+            <input id="mStoreName" autofocus>
+
+            <label>Адрес</label>
+            <input id="mStoreAddress">
+
+            <label>Телефон</label>
+            <input id="mStorePhone">
+
+        </div>
+        `,
+        () => {
+
+            const name =
+                document.getElementById("mStoreName").value.trim();
+
+            if(!name){
+
+                alert("Введите название магазина.");
+                return false;
+
+            }
+
+            db.stores.push({
+
+                id:nextId(db.stores),
+
+                name,
+
+                address:
+                    document.getElementById("mStoreAddress").value.trim(),
+
+                phone:
+                    document.getElementById("mStorePhone").value.trim()
+
+            });
+
+            saveDB();
+            renderAll();
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function deleteStore(id){
+
+    if(!confirm("Удалить магазин?")) return;
+
+    db.stores =
+        db.stores.filter(
+            x => Number(x.id) !== Number(id)
+        );
+
+    db.schedules =
+        db.schedules.filter(
+            x => Number(x.storeId) !== Number(id)
+        );
+
+    db.stockSnapshots =
+        db.stockSnapshots.filter(
+            x => Number(x.storeId) !== Number(id)
+        );
+
+    db.consumption =
+        db.consumption.filter(
+            x => Number(x.storeId) !== Number(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   SCHEDULE
+========================================================= */
+
+const DAYS = [
+    "Вс",
+    "Пн",
+    "Вт",
+    "Ср",
+    "Чт",
+    "Пт",
+    "Сб"
+];
+
+
+function daysText(arr){
+
+    if(!Array.isArray(arr)) return "";
+
+    return arr.map(x => DAYS[x]).join(", ");
+
+}
+
+
+function renderSchedule(){
+
+    const tbody =
+        document.getElementById("scheduleTable");
+
+    if(!tbody) return;
+
+
+    tbody.innerHTML =
+        db.schedules.map(s => `
+
+        <tr>
+
+            <td>
+                ${esc(supplierName(s.supplierId))}
+            </td>
+
+            <td>
+                ${esc(storeName(s.storeId))}
+            </td>
+
+            <td>
+                <span class="badge">
+                    ${esc(daysText(s.orderDays))}
+                </span>
+            </td>
+
+            <td>
+                <span class="badge green">
+                    ${esc(daysText(s.deliveryDays))}
+                </span>
+            </td>
+
+            <td class="center">
+
+                <button
+                    class="btn small"
+                    onclick="editSchedule('${s.id}')"
+                >Изменить</button>
+
+                <button
+                    class="btn small danger"
+                    onclick="deleteSchedule('${s.id}')"
+                >×</button>
+
+            </td>
+
+        </tr>
+
+        `).join("");
+
+}
+
+
+function addSchedule(){
+
+    if(!db.suppliers.length || !db.stores.length){
+
+        alert("Сначала добавьте поставщика и магазин.");
+        return;
+
+    }
+
+    showScheduleModal(null);
+
+}
+
+
+function editSchedule(id){
+
+    const s =
+        db.schedules.find(x => String(x.id) === String(id));
+
+    if(s) showScheduleModal(s);
+
+}
+
+
+function showScheduleModal(existing){
+
+    const supplierOptions =
+        db.suppliers.map(s => `
+            <option
+                value="${s.id}"
+                ${existing && Number(existing.supplierId)===Number(s.id) ? "selected":""}
+            >
+                ${esc(s.name)}
+            </option>
+        `).join("");
+
+
+    const storeOptions =
+        db.stores.map(s => `
+            <option
+                value="${s.id}"
+                ${existing && Number(existing.storeId)===Number(s.id) ? "selected":""}
+            >
+                ${esc(s.name)}
+            </option>
+        `).join("");
+
+
+    const makeDays = (type) => {
+
+        const selected =
+            existing?.[type] || [];
+
+        return DAYS.map((d,i) => `
+            <label
+                class="day ${selected.includes(i) ? "checked":""}"
+                onclick="this.classList.toggle('checked')"
+            >
+                <input
+                    type="checkbox"
+                    data-day="${i}"
+                    data-type="${type}"
+                    ${selected.includes(i) ? "checked":""}
+                >
+                ${d}
+            </label>
+        `).join("");
+
+    };
+
+
+    openModal(
+        existing ? "Изменение графика" : "Новый график",
+        `
+
+        <div class="form-grid">
+
+            <label>Поставщик</label>
+            <select id="mScheduleSupplier">
+                ${supplierOptions}
+            </select>
+
+            <label>Магазин</label>
+            <select id="mScheduleStore">
+                ${storeOptions}
+            </select>
+
+            <label>Дни подачи заявки</label>
+            <div class="day-grid" id="orderDays">
+                ${makeDays("orderDays")}
+            </div>
+
+            <label>Дни доставки</label>
+            <div class="day-grid" id="deliveryDays">
+                ${makeDays("deliveryDays")}
+            </div>
+
+        </div>
+
+        `,
+        () => {
+
+            const getDays = type => {
+
+                return [
+                    ...document.querySelectorAll(
+                        `input[data-type="${type}"]`
+                    )
+                ]
+                .filter(x => x.checked)
+                .map(x => Number(x.dataset.day));
+
+            };
+
+
+            const obj = {
+
+                id:
+                    existing
+                    ? existing.id
+                    : crypto.randomUUID(),
+
+                supplierId:
+                    Number(
+                        document.getElementById("mScheduleSupplier").value
+                    ),
+
+                storeId:
+                    Number(
+                        document.getElementById("mScheduleStore").value
+                    ),
+
+                orderDays:getDays("orderDays"),
+
+                deliveryDays:getDays("deliveryDays")
+
+            };
+
+
+            if(existing){
+
+                Object.assign(existing,obj);
+
+            }
+            else{
+
+                db.schedules.push(obj);
+
+            }
+
+
+            saveDB();
+            renderAll();
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function deleteSchedule(id){
+
+    if(!confirm("Удалить график?")) return;
+
+    db.schedules =
+        db.schedules.filter(
+            x => String(x.id) !== String(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+function fillFilters(){
+
+    const productSupplierFilter =
+        document.getElementById("productSupplierFilter");
+
+    const relationSupplierFilter =
+        document.getElementById("relationSupplierFilter");
+
+    const relationProductFilter =
+        document.getElementById("relationProductFilter");
+
+    const stockStore =
+        document.getElementById("stockStore");
+
+    const historyStore =
+        document.getElementById("historyStore");
+
+    const historySupplier =
+        document.getElementById("historySupplier");
+
+
+    if(productSupplierFilter){
+
+        const old = productSupplierFilter.value;
+
+        productSupplierFilter.innerHTML =
+            `<option value="">Все поставщики</option>` +
+            db.suppliers.map(s =>
+                `<option value="${s.id}">${esc(s.name)}</option>`
+            ).join("");
+
+        productSupplierFilter.value = old;
+
+    }
+
+
+    if(relationSupplierFilter){
+
+        const old = relationSupplierFilter.value;
+
+        relationSupplierFilter.innerHTML =
+            `<option value="">Все поставщики</option>` +
+            db.suppliers.map(s =>
+                `<option value="${s.id}">${esc(s.name)}</option>`
+            ).join("");
+
+        relationSupplierFilter.value = old;
+
+    }
+
+
+    if(relationProductFilter){
+
+        const old = relationProductFilter.value;
+
+        relationProductFilter.innerHTML =
+            `<option value="">Все товары</option>` +
+            db.products.map(p =>
+                `<option value="${p.id}">${esc(p.name)}</option>`
+            ).join("");
+
+        relationProductFilter.value = old;
+
+    }
+
+
+    if(stockStore){
+
+        const old = stockStore.value;
+
+        stockStore.innerHTML =
+            db.stores.map(s =>
+                `<option value="${s.id}">${esc(s.name)}</option>`
+            ).join("");
+
+        if(old) stockStore.value = old;
+
+    }
+
+
+    if(historyStore){
+
+        const old = historyStore.value;
+
+        historyStore.innerHTML =
+            `<option value="">Все магазины</option>` +
+            db.stores.map(s =>
+                `<option value="${s.id}">${esc(s.name)}</option>`
+            ).join("");
+
+        historyStore.value = old;
+
+    }
+
+
+    if(historySupplier){
+
+        const old = historySupplier.value;
+
+        historySupplier.innerHTML =
+            `<option value="">Все поставщики</option>` +
+            db.suppliers.map(s =>
+                `<option value="${s.id}">${esc(s.name)}</option>`
+            ).join("");
+
+        historySupplier.value = old;
+
+    }
+
+}
+
+
+/* =========================================================
+   STOCK
+========================================================= */
+
+function getStock(date,storeId,productId){
+
+    const x =
+        db.stockSnapshots.find(s =>
+            s.date === date &&
+            Number(s.storeId) === Number(storeId) &&
+            Number(s.productId) === Number(productId)
+        );
+
+    return x ? Number(x.qty) : 0;
+}
+
+
+function getConsumption(storeId,productId){
+
+    const x =
+        db.consumption.find(c =>
+            Number(c.storeId) === Number(storeId) &&
+            Number(c.productId) === Number(productId)
+        );
+
+    return x ? Number(x.dailyConsumption) : 0;
+}
+
+
+function renderStock(){
+
+    const tbody =
+        document.getElementById("stockTable");
+
+    if(!tbody) return;
+
+    const date =
+        document.getElementById("stockDate")?.value || today();
+
+    const storeId =
+        Number(document.getElementById("stockStore")?.value || 0);
+
+    const search =
+        (
+            document.getElementById("stockSearch")?.value || ""
+        ).toLowerCase();
+
+
+    if(!storeId){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="center muted">
+                    Сначала добавьте магазин.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const rows =
+        db.products.filter(p =>
+            !search ||
+            p.name.toLowerCase().includes(search)
+        );
+
+
+    tbody.innerHTML =
+        rows.map(p => {
+
+            const saved =
+                db.stockSnapshots.some(s =>
+                    s.date === date &&
+                    Number(s.storeId) === storeId &&
+                    Number(s.productId) === Number(p.id)
+                );
+
+            const stock =
+                getStock(date,storeId,p.id);
+
+            const consumption =
+                getConsumption(storeId,p.id);
+
+            const days =
+                consumption > 0
+                ? stock / consumption
+                : 0;
+
+
+            return `
+            <tr>
+
+                <td>${p.id}</td>
+
+                <td>${esc(p.name)}</td>
+
+                <td>
+                    <input
+                        type="number"
+                        step="0.01"
+                        class="stock-input"
+                        data-product="${p.id}"
+                        value="${stock}"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        type="number"
+                        step="0.01"
+                        value="${consumption}"
+                        onchange="
+                            setConsumption(
+                                ${storeId},
+                                ${p.id},
+                                this.value
+                            )
+                        "
+                    >
+                </td>
+
+                <td class="num">
+                    ${consumption > 0 ? days.toFixed(1) : "—"}
+                </td>
+
+                <td class="center">
+                    ${
+                        saved
+                        ? `<span class="badge green">Да</span>`
+                        : `<span class="badge">Нет</span>`
+                    }
+                </td>
+
+            </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+function setConsumption(storeId,productId,value){
+
+    let x =
+        db.consumption.find(c =>
+            Number(c.storeId) === Number(storeId) &&
+            Number(c.productId) === Number(productId)
+        );
+
+
+    if(!x){
+
+        x = {
+
+            id:crypto.randomUUID(),
+
+            storeId:Number(storeId),
+
+            productId:Number(productId),
+
+            dailyConsumption:Number(value) || 0
+
+        };
+
+        db.consumption.push(x);
+
+    }
+    else{
+
+        x.dailyConsumption =
+            Number(value) || 0;
+
+    }
+
+
+    saveDB();
+    renderStock();
+
+}
+
+
+function saveStockSnapshot(){
+
+    const date =
+        document.getElementById("stockDate").value;
+
+    const storeId =
+        Number(document.getElementById("stockStore").value);
+
+
+    if(!date || !storeId){
+
+        alert("Выберите дату и магазин.");
+        return;
+
+    }
+
+
+    document.querySelectorAll(".stock-input")
+        .forEach(input => {
+
+            const productId =
+                Number(input.dataset.product);
+
+            const qty =
+                Number(input.value) || 0;
+
+
+            let row =
+                db.stockSnapshots.find(s =>
+                    s.date === date &&
+                    Number(s.storeId) === storeId &&
+                    Number(s.productId) === productId
+                );
+
+
+            if(!row){
+
+                row = {
+
+                    id:crypto.randomUUID(),
+
+                    date,
+
+                    storeId,
+
+                    productId,
+
+                    qty
+
+                };
+
+                db.stockSnapshots.push(row);
+
+            }
+            else{
+
+                row.qty = qty;
+
+            }
+
+        });
+
+
+    saveDB();
+    renderStock();
+
+    alert("Остатки сохранены на дату " + date);
+
+}
+
+
+/* =========================================================
+   REQUEST CREATOR
+========================================================= */
+
+function openRequestCreator(){
+
+    goPage("requests");
+
+    const editor =
+        document.getElementById("requestEditor");
+
+
+    const date = today();
+
+    editor.innerHTML = `
+
+        <div class="request-box">
+
+            <div class="request-head">
+
+                <label>
+                    Дата заявки
+                    <input
+                        type="date"
+                        id="reqDate"
+                        value="${date}"
+                    >
+                </label>
+
+                <label>
+                    Магазин
+                    <select id="reqStore"></select>
+                </label>
+
+                <label>
+                    Поставщик
+                    <select id="reqSupplier"></select>
+                </label>
+
+                <label>
+                    Покрытие расхода, дней
+                    <input
+                        type="number"
+                        id="reqDays"
+                        value="2"
+                        min="0"
+                        step="0.5"
+                    >
+                </label>
+
+            </div>
+
+        </div>
+
+        <div class="toolbar">
+
+            <span class="toolbar-title">
+                Товары для заявки
+            </span>
+
+            <input
+                class="search"
+                id="reqSearch"
+                placeholder="Поиск товара..."
+                oninput="renderRequestProducts()"
+            >
+
+            <button
+                class="btn"
+                onclick="selectAllRequestProducts()"
+            >
+                Выбрать все
+            </button>
+
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th style="width:35px"></th>
+                        <th>Товар</th>
+                        <th>Остаток</th>
+                        <th>Расход/день</th>
+                        <th>Нужно</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="requestProductsTable"></tbody>
+
+            </table>
+
+        </div>
+
+        <div class="toolbar">
+
+            <button
+                class="btn success"
+                onclick="saveRequest()"
+            >
+                Сохранить заявку
+            </button>
+
+            <button
+                class="btn primary"
+                onclick="saveRequestAndWhatsApp()"
+            >
+                Сохранить и WhatsApp
+            </button>
+
+        </div>
+    `;
+
+
+    const store =
+        document.getElementById("reqStore");
+
+    store.innerHTML =
+        db.stores.map(s =>
+            `<option value="${s.id}">
+                ${esc(s.name)}
+            </option>`
+        ).join("");
+
+
+    const supplier =
+        document.getElementById("reqSupplier");
+
+    supplier.innerHTML =
+        db.suppliers.map(s =>
+            `<option value="${s.id}">
+                ${esc(s.name)}
+            </option>`
+        ).join("");
+
+
+    supplier.addEventListener(
+        "change",
+        renderRequestProducts
+    );
+
+    store.addEventListener(
+        "change",
+        renderRequestProducts
+    );
+
+    document.getElementById("reqDate")
+        .addEventListener(
+            "change",
+            renderRequestProducts
+        );
+
+    document.getElementById("reqDays")
+        .addEventListener(
+            "input",
+            renderRequestProducts
+        );
+
+
+    renderRequestProducts();
+
+}
+
+
+function renderRequestProducts(){
+
+    const tbody =
+        document.getElementById("requestProductsTable");
+
+    if(!tbody) return;
+
+
+    const supplierId =
+        Number(document.getElementById("reqSupplier").value);
+
+    const storeId =
+        Number(document.getElementById("reqStore").value);
+
+    const date =
+        document.getElementById("reqDate").value;
+
+    const days =
+        Number(document.getElementById("reqDays").value) || 0;
+
+    const search =
+        (
+            document.getElementById("reqSearch").value || ""
+        ).toLowerCase();
+
+
+    /*
+      Берем только товары выбранного поставщика.
+    */
+
+    const rows =
+        db.supplierProducts.filter(r =>
+            Number(r.supplierId) === supplierId &&
+            r.active !== false &&
+            (
+                !search ||
+                productName(r.productId)
+                    .toLowerCase()
+                    .includes(search)
+            )
+        );
+
+
+    tbody.innerHTML =
+        rows.map(r => {
+
+            const stock =
+                getStock(date,storeId,r.productId);
+
+            const consumption =
+                getConsumption(storeId,r.productId);
+
+            /*
+              Нужно примерно на X дней:
+
+              расход * количество дней
+
+              Минус текущий остаток.
+            */
+
+            const need =
+                Math.max(
+                    0,
+                    consumption * days - stock
+                );
+
+
+            return `
+            <tr>
+
+                <td class="center">
+                    <input
+                        type="checkbox"
+                        class="req-check"
+                        data-product="${r.productId}"
+                        onchange="toggleRequestQty(this)"
+                    >
+                </td>
+
+                <td>
+                    ${esc(productName(r.productId))}
+                </td>
+
+                <td class="num">
+                    ${formatQty(stock)}
+                </td>
+
+                <td class="num">
+                    ${formatQty(consumption)}
+                </td>
+
+                <td class="num">
+                    <span class="badge yellow">
+                        ${formatQty(need)}
+                    </span>
+                </td>
+
+                <td class="num">
+                    ${r.price === "" ? "—" : formatQty(r.price)}
+                </td>
+
+                <td>
+                    <input
+                        class="req-qty"
+                        data-product="${r.productId}"
+                        type="number"
+                        step="0.01"
+                        value="${need > 0 ? need : ""}"
+                        disabled
+                    >
+                </td>
+
+            </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+function toggleRequestQty(check){
+
+    const productId =
+        check.dataset.product;
+
+    const input =
+        document.querySelector(
+            `.req-qty[data-product="${productId}"]`
+        );
+
+    if(input){
+
+        input.disabled = !check.checked;
+
+        if(check.checked && !input.value){
+
+            input.value = 1;
+
+        }
+
+    }
+
+}
+
+
+function selectAllRequestProducts(){
+
+    document.querySelectorAll(".req-check")
+        .forEach(check => {
+
+            check.checked = true;
+
+            toggleRequestQty(check);
+
+        });
+
+}
+
+
+/* =========================================================
+   SAVE REQUEST
+========================================================= */
+
+function buildRequest(){
+
+    const date =
+        document.getElementById("reqDate").value;
+
+    const storeId =
+        Number(document.getElementById("reqStore").value);
+
+    const supplierId =
+        Number(document.getElementById("reqSupplier").value);
+
+
+    const lines = [];
+
+
+    document.querySelectorAll(".req-check:checked")
+        .forEach(check => {
+
+            const productId =
+                Number(check.dataset.product);
+
+            const qtyInput =
+                document.querySelector(
+                    `.req-qty[data-product="${productId}"]`
+                );
+
+            const relation =
+                db.supplierProducts.find(r =>
+                    Number(r.supplierId) === supplierId &&
+                    Number(r.productId) === productId
+                );
+
+
+            lines.push({
+
+                productId,
+
+                qty:
+                    Number(qtyInput?.value) || 0,
+
+                stockBefore:
+                    getStock(
+                        date,
+                        storeId,
+                        productId
+                    ),
+
+                dailyConsumption:
+                    getConsumption(
+                        storeId,
+                        productId
+                    ),
+
+                price:
+                    relation?.price ?? ""
+
+            });
+
+        });
+
+
+    return {
+
+        id:crypto.randomUUID(),
+
+        date,
+
+        storeId,
+
+        supplierId,
+
+        status:"Создана",
+
+        createdAt:new Date().toISOString(),
+
+        lines
+
+    };
+
+}
+
+
+function saveRequest(){
+
+    const request =
+        buildRequest();
+
+
+    if(!request.lines.length){
+
+        alert("Выберите хотя бы один товар.");
+        return null;
+
+    }
+
+
+    db.requests.push(request);
+
+    saveDB();
+
+    renderAll();
+
+    alert(
+        `Заявка сохранена.\nТоваров: ${request.lines.length}`
+    );
+
+    return request;
+
+}
+
+
+function saveRequestAndWhatsApp(){
+
+    const request =
+        saveRequest();
+
+    if(request){
+
+        openWhatsAppForRequest(request);
+
+    }
+
+}
+
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+function buildWhatsAppText(request) {
+
+    const supplier =
+        db.suppliers.find(
+            x => Number(x.id) === Number(request.supplierId)
+        );
+
+    const store =
+        db.stores.find(
+            x => Number(x.id) === Number(request.storeId)
+        );
+
+    let text =
+        `Здравствуйте!\n` +
+        `Заявка от ${formatDate(request.date)}\n` +
+        `Магазин: ${store?.name || "—"}\n\n`;
+
+    request.lines.forEach((line, index) => {
+
+        const product = db.products.find(
+            x => Number(x.id) === Number(line.productId)
+        );
+
+        text +=
+            `${index + 1}. ` +
+            `${productName(line.productId)} — ` +
+            `${formatQty(line.qty)}` +
+            `${product?.unit ?`${product.unit}` : ""}\n`;
+    });
+
+    text +=
+        `\nСпасибо!`;
+
+    return text;
+}
+
+
+function openWhatsAppForRequest(request){
+
+    const text =
+        buildWhatsAppText(request);
+
+    const url =
+        "https://wa.me/?text=" +
+        encodeURIComponent(text);
+
+    window.open(url,"_blank");
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function renderHistory(){
+
+    const tbody =
+        document.getElementById("historyTable");
+
+    if(!tbody) return;
+
+
+    const date =
+        document.getElementById("historyDate")?.value || "";
+
+    const store =
+        document.getElementById("historyStore")?.value || "";
+
+    const supplier =
+        document.getElementById("historySupplier")?.value || "";
+
+
+    const rows =
+        db.requests.filter(r => {
+
+            if(date && r.date !== date)
+                return false;
+
+            if(
+                store &&
+                Number(r.storeId) !== Number(store)
+            )
+                return false;
+
+            if(
+                supplier &&
+                Number(r.supplierId) !== Number(supplier)
+            )
+                return false;
+
+            return true;
+
+        });
+
+
+    tbody.innerHTML =
+        rows
+        .slice()
+        .reverse()
+        .map(r => `
+
+        <tr>
+
+            <td>${formatDate(r.date)}</td>
+
+            <td>${esc(storeName(r.storeId))}</td>
+
+            <td>${esc(supplierName(r.supplierId))}</td>
+
+            <td class="center">
+                ${r.lines.length}
+            </td>
+
+            <td>
+                <span class="badge">
+                    ${esc(r.status || "Создана")}
+                </span>
+            </td>
+
+            <td>
+
+                <button
+                    class="btn small"
+                    onclick="viewRequest('${r.id}')"
+                >
+                    Открыть
+                </button>
+
+                <button
+                    class="btn small"
+                    onclick="openWhatsAppForRequestById('${r.id}')"
+                >
+                    WhatsApp
+                </button>
+
+                <button
+                    class="btn small danger"
+                    onclick="deleteRequest('${r.id}')"
+                >
+                    Удалить
+                </button>
+
+            </td>
+
+        </tr>
+
+        `).join("");
+
+}
+
+
+function formatDate(value){
+
+    if(!value) return "";
+
+    const [y,m,d] =
+        value.split("-");
+
+    return `${d}.${m}.${y}`;
+
+}
+
+
+function viewRequest(id){
+
+    const request =
+        db.requests.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!request) return;
+
+
+    let html = `
+
+        <div class="form-grid">
+
+            <label>Дата</label>
+            <input value="${formatDate(request.date)}" disabled>
+
+            <label>Магазин</label>
+            <input value="${esc(storeName(request.storeId))}" disabled>
+
+            <label>Поставщик</label>
+            <input value="${esc(supplierName(request.supplierId))}" disabled>
+
+            <label>Статус</label>
+            <select id="viewRequestStatus">
+                ${[
+                    "Создана",
+                    "Отправлена",
+                    "Частично привезена",
+                    "Привезена",
+                    "Закрыта"
+                ].map(x =>
+                    `<option ${x===request.status?"selected":""}>${x}</option>`
+                ).join("")}
+            </select>
+
+        </div>
+
+        <br>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Остаток</th>
+                        <th>Расход/день</th>
+                        <th>Заявлено</th>
+                        <th>Привезено</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${request.lines.map((line,index) => `
+
+                        <tr>
+
+                            <td>
+                                ${esc(productName(line.productId))}
+                            </td>
+
+                            <td class="num">
+                                ${formatQty(line.stockBefore)}
+                            </td>
+
+                            <td class="num">
+                                ${formatQty(line.dailyConsumption)}
+                            </td>
+
+                            <td class="num">
+                                ${formatQty(line.qty)}
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="delivered_${index}"
+                                    value="${
+                                        line.delivered === undefined
+                                        ? ""
+                                        : line.delivered
+                                    }"
+                                >
+                            </td>
+
+                        </tr>
+
+                    `).join("")}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+
+
+    openModal(
+        "Заявка",
+        html,
+        () => {
+
+            request.status =
+                document.getElementById(
+                    "viewRequestStatus"
+                ).value;
+
+
+            request.lines.forEach((line,index) => {
+
+                const input =
+                    document.getElementById(
+                        `delivered_${index}`
+                    );
+
+                if(input){
+
+                    line.delivered =
+                        input.value === ""
+                        ? null
+                        : Number(input.value);
+
+                }
+
+            });
+
+
+            saveDB();
+            renderAll();
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function openWhatsAppForRequestById(id){
+
+    const request =
+        db.requests.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(request){
+
+        openWhatsAppForRequest(request);
+
+    }
+
+}
+
+
+function deleteRequest(id){
+
+    if(!confirm("Удалить заявку из истории?")) return;
+
+    db.requests =
+        db.requests.filter(
+            x => String(x.id) !== String(id)
+        );
+
+    saveDB();
+    renderAll();
+}
+
+
+/* =========================================================
+   DASHBOARD SCHEDULE
+========================================================= */
+
+function renderDashboardSchedule(){
+
+    const tbody =
+        document.getElementById("dashboardSchedule");
+
+    if(!tbody) return;
+
+
+    tbody.innerHTML =
+        db.schedules.map(s => {
+
+            const count =
+                db.supplierProducts.filter(r =>
+                    Number(r.supplierId) === Number(s.supplierId)
+                ).length;
+
+
+            return `
+            <tr>
+
+                <td>
+                    ${esc(supplierName(s.supplierId))}
+                </td>
+
+                <td>
+                    ${esc(storeName(s.storeId))}
+                </td>
+
+                <td>
+                    ${esc(daysText(s.orderDays))}
+                </td>
+
+                <td>
+                    <span class="badge green">
+                        ${esc(daysText(s.deliveryDays))}
+                    </span>
+                </td>
+
+                <td class="center">
+                    ${count}
+                </td>
+
+            </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+let modalSaveHandler = null;
+
+
+function openModal(title,html,onSave){
+
+    document.getElementById("modalTitle")
+        .textContent = title;
+
+    document.getElementById("modalBody")
+        .innerHTML = html;
+
+    modalSaveHandler = onSave;
+
+    document.getElementById("modalSave").onclick = () => {
+
+        if(!modalSaveHandler) return;
+
+        const result =
+            modalSaveHandler();
+
+        if(result !== false){
+
+            closeModal();
+
+        }
+
+    };
+
+
+    document.getElementById("modalBack")
+        .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+    document.getElementById("modalBack")
+        .classList.remove("show");
+
+    modalSaveHandler = null;
+
+}
+
+
+document.getElementById("modalBack")
+    .addEventListener("click",e => {
+
+        if(e.target.id === "modalBack"){
+            closeModal();
+        }
+
+    });
+
+
+/* =========================================================
+   JSON EXPORT
+========================================================= */
+
+function exportJSON(){
+
+    const data =
+        JSON.stringify(db,null,2);
+
+    const blob =
+        new Blob(
+            [data],
+            {type:"application/json;charset=utf-8"}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "database_" +
+        today() +
+        ".json";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================================================
+   JSON IMPORT
+========================================================= */
+
+function importJSONText(){
+
+    const text =
+        document.getElementById("jsonArea")
+            .value.trim();
+
+    if(!text){
+
+        alert("Вставьте JSON.");
+        return;
+
+    }
+
+
+    try{
+
+        const data =
+            JSON.parse(text);
+
+        db =
+            normalizeDatabase(data);
+
+        saveDB();
+        renderAll();
+
+        alert(
+            "База импортирована.\n\n" +
+            `Поставщиков: ${db.suppliers.length}\n` +
+            `Товаров: ${db.products.length}\n` +
+            `Связей: ${db.supplierProducts.length}`
+        );
+
+    }
+    catch(e){
+
+        alert(
+            "Ошибка JSON:\n" +
+            e.message
+        );
+
+    }
+
+}
+
+
+function importJSONFile(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = () => {
+
+        document.getElementById("jsonArea")
+            .value = reader.result;
+
+        importJSONText();
+
+    };
+
+
+    reader.readAsText(file,"utf-8");
+
+    event.target.value = "";
+
+}
+
+
+function loadJSONToEditor(){
+
+    document.getElementById("jsonArea")
+        .value =
+        JSON.stringify(db,null,2);
+
+}
+
+
+/* =========================================================
+   CLEAR DATABASE
+========================================================= */
+
+function clearDatabase(){
+
+    const text =
+        prompt(
+            "Для полного удаления базы напишите УДАЛИТЬ"
+        );
+
+    if(text !== "УДАЛИТЬ") return;
+
+
+    localStorage.removeItem(DB_KEY);
+
+    location.reload();
+
+}
+
+
+/* =========================================================
+   OPTIONAL: CONVERT CURRENT DB BACK TO OLD FORMAT
+========================================================= */
+
+/*
+  Если когда-нибудь понадобится получить обратно
+  supplierProducts в старом формате:
+
+  {
+      "1":[165,166],
+      "22":[69,139]
+  }
+
+  можно использовать эту функцию в консоли.
+*/
+
+function makeOldSupplierProductsFormat(){
+    const result = {};
+    db.supplierProducts.forEach(r => {
+        if(!result[r.supplierId]) {
+            result[r.supplierId] = [];
+        }
+        result[r.supplierId].push(Number(r.productId));
+    });
+    return result;
+}
+
+
+/* =========================================================
+   DEMO STORE
+========================================================= */
+
+/*
+  Магазины специально НЕ добавляются автоматически,
+  потому что у тебя будут реальные магазины.
+
+  После импорта базы:
+  1. Открой "Магазины".
+  2. Добавь свои магазины.
+  3. Открой "График".
+  4. Укажи поставщика + магазин.
+  5. Выбери дни заявки.
+  6. Выбери дни доставки.
+*/
+
+
+</script>
+
+</body>
+</html>
